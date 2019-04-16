@@ -179,49 +179,73 @@ double max(double num1,double num2){
 	return (num1 > num2 ) ? num1 : num2;
 }
 double Defuzzication_R(double e, double de){
-
+	
 	//Return e and de in range [-1 1]
 	e=(e>1)?1:e;
 	e=(e<-1)?-1:e;
 	de=(de>1)?1:de;
-	de=(de<-1)?-1:de;
-
-	double e_NE,e_ZE,e_PO,de_NE,de_ZE,de_PO;
-
-	e_NE=mftrap(e,-1.1,-1,-0.1,0);
+	de=(de<-1)?-1:de; 
+	
+	double e_NB,e_NE,e_ZE,e_PO,e_PB,de_NB,de_NS,de_ZE,de_PS,de_PB;
+	
+	e_NB=mftrap(e,-1.1,-1,-0.5,-0.1);
+	e_NE=mftrap(e,-0.5,-0.1,-0.1,0);
 	e_ZE=mftrap(e,-0.1,0,0,0.1);
-	e_PO=mftrap(e,0,0.1,1,1.1);
-
-	de_NE=mftrap(de,-1.1,-1,-1,0);
-	de_ZE=mftrap(de,-1,0,0,1);
-	de_PO=mftrap(de,0,1,1,1.1);
-
+	e_PO=mftrap(e,0,0.1,0.1,0.5);	
+	e_PB=mftrap(e,0.1,0.5,1,1.1);
+	
+	de_NB=mftrap(de,-1.1,-1,-1,-0.5);
+	de_NS=mftrap(de,-1,-0.5,-0.5,0);
+	de_ZE=mftrap(de,-0.5,0,0,0.5);
+	de_PS=mftrap(de,0,0.5,0.5,1);
+	de_PB=mftrap(de,0.5,1,1,1.1);
+	
 	double	dR_NB=-1;
+	double  dR_NM=-0.6;
 	double	dR_NS=-0.4;
 	double	dR_ZE=0;
 	double	dR_PS=0.4;
+	double  dR_PM=0.6;
 	double	dR_PB=1;
+	
+	double	beta1=e_NB*de_NB;   //R=NB
+	double	beta2=e_NB*de_NS;   //R=NB
+	double	beta3=e_NB*de_ZE;   //R=NM
+	double	beta4=e_NB*de_PS;   //R=NS
+	double	beta5=e_NB*de_PB;   //R=ZE
+	double	beta6=e_NE*de_NB;   //R=NB
+	double	beta7=e_NE*de_NS;   //R=NM
+	double	beta8=e_NE*de_ZE;   //R=NS
+	double	beta9=e_NE*de_PS;   //R=ZE
+  double	beta10=e_NE*de_PB;  //R=PS
+  double	beta11=e_ZE*de_NB;	//R=NM
+  double	beta12=e_ZE*de_NS;	//R=NS
+  double	beta13=e_ZE*de_ZE;	//R=ZE
+	double	beta14=e_ZE*de_PS;	//R=PS
+	double	beta15=e_ZE*de_PB;	//R=PM
+	double	beta16=e_PO*de_NB;	//R=NS
+	double	beta17=e_PO*de_NS;	//R=ZE
+	double	beta18=e_PO*de_ZE;	//R=PS
+	double	beta19=e_PO*de_PS;	//R=PM
+	double	beta20=e_PO*de_PB;	//R=PB
+	double	beta21=e_PB*de_NB;	//R=ZE
+	double	beta22=e_PB*de_NS;	//R=PS
+	double	beta23=e_PB*de_ZE;	//R=PM
+	double	beta24=e_PB*de_PS; 	//R=PB
+	double	beta25=e_PB*de_PB;	//R=PB
 
-	double	beta1=e_NE*de_NE;   //R=NB
-	double	beta2=e_NE*de_ZE;   //R=NS
-	double	beta3=e_NE*de_PO;   //R=ZE
-	double	beta4=e_ZE*de_NE;   //R=NS
-	double	beta5=e_ZE*de_ZE;   //R=ZE
-	double	beta6=e_ZE*de_PO;   //R=PS
-	double	beta7=e_PO*de_NE;   //R=ZE
-	double	beta8=e_PO*de_ZE;   //R=PS
-	double	beta9=e_PO*de_PO;   //R=PB
-
-	double beta_NB=beta1;
-	double beta_NS=max(beta2,beta4);
-	double beta_ZE=max(beta3,max(beta5,beta7));
-	double beta_PS=max(beta6,beta8);
-	double beta_PB=beta9;
-
-
-	double sumBeta=beta_NB+beta_NS+beta_ZE+beta_PS+beta_PB;
-	double dR=(dR_NB*beta_NB+dR_NS*beta_NS+dR_ZE*beta_ZE+dR_PS*beta_PS+dR_PB*beta_PB)/sumBeta;
-
+	
+	double beta_NB=max(beta1,max(beta2,beta6));
+	double beta_NM=max(beta3,max(beta7,beta11));
+	double beta_NS=max(max(beta4,beta8),max(beta12,beta16));
+	double beta_ZE=max(max(beta5,max(beta9,beta13)),max(beta17,beta21));
+	double beta_PS=max(max(beta10,beta14),max(beta18,beta22));
+	double beta_PM=max(beta15,max(beta19,beta23));
+	double beta_PB=max(beta20,max(beta24,beta25));
+	
+	double sumBeta=beta_NB+beta_NM+beta_NS+beta_ZE+beta_PS+beta_PM+beta_PB;
+	double dR=(dR_NB*beta_NB+dR_NM*beta_NM+dR_NS*beta_NS+dR_ZE*beta_ZE+dR_PS*beta_PS+dR_PM*beta_PM+dR_PB*beta_PB)/sumBeta;
+	
 	return dR;
 }
 double Defuzzication_L(double e, double de){
