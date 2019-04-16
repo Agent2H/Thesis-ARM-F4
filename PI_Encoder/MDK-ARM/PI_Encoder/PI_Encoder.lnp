@@ -1,0 +1,25 @@
+--cpu=Cortex-M4.fp
+"pi_encoder\startup_stm32f407xx.o"
+"pi_encoder\main.o"
+"pi_encoder\stm32f4xx_it.o"
+"pi_encoder\stm32f4xx_hal_msp.o"
+"pi_encoder\stm32f4xx_hal_tim.o"
+"pi_encoder\stm32f4xx_hal_tim_ex.o"
+"pi_encoder\stm32f4xx_hal_uart.o"
+"pi_encoder\stm32f4xx_hal_rcc.o"
+"pi_encoder\stm32f4xx_hal_rcc_ex.o"
+"pi_encoder\stm32f4xx_hal_flash.o"
+"pi_encoder\stm32f4xx_hal_flash_ex.o"
+"pi_encoder\stm32f4xx_hal_flash_ramfunc.o"
+"pi_encoder\stm32f4xx_hal_gpio.o"
+"pi_encoder\stm32f4xx_hal_dma_ex.o"
+"pi_encoder\stm32f4xx_hal_dma.o"
+"pi_encoder\stm32f4xx_hal_pwr.o"
+"pi_encoder\stm32f4xx_hal_pwr_ex.o"
+"pi_encoder\stm32f4xx_hal_cortex.o"
+"pi_encoder\stm32f4xx_hal.o"
+"pi_encoder\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "PI_Encoder\PI_Encoder.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "PI_Encoder.map" -o PI_Encoder\PI_Encoder.axf
